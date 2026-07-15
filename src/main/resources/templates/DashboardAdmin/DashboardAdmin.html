@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Pixeltek - Cyber-Log</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --cyber-fuxia: #e01b84; 
+            --cyber-fuxia-glow: rgba(224, 27, 132, 0.6);
+            --cyber-cyan: #00f0ff;
+            --cyber-cyan-glow: rgba(0, 240, 255, 0.6);
+            --cyber-dark: #08090c;
+            --cyber-gray: #11131c;
+            --cyber-light: #f0f0f0;
+        }
+
+        body {
+            background-color: var(--cyber-dark) !important;
+            color: var(--cyber-light) !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, #10121d 0%, var(--cyber-dark) 80%);
+            min-height: 100vh;
+        }
+
+        /* Navbar stilizzata */
+        .navbar-cyber {
+            background-color: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 2px solid var(--cyber-fuxia);
+            box-shadow: 0 0 20px var(--cyber-fuxia-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand-img {
+            height: 45px;
+            width: auto;
+            filter: drop-shadow(0 0 5px var(--cyber-fuxia-glow));
+        }
+
+        /* Testi principali */
+        h1.cyber-h1 {
+            color: var(--cyber-light);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px var(--cyber-fuxia-glow);
+        }
+
+        .text-cyber-muted {
+            color: #7b839a;
+        }
+
+        /* Separatori di Dipartimento */
+        .dept-section {
+            margin-bottom: 4rem;
+        }
+
+        .dept-header {
+            border-left: 4px solid var(--cyber-cyan);
+            padding-left: 15px;
+            position: relative;
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.08) 0%, rgba(0, 0, 0, 0) 100%);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .dept-title {
+            color: var(--cyber-cyan);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--cyber-cyan-glow);
+        }
+
+        .dept-count-badge {
+            background-color: rgba(0, 240, 255, 0.15);
+            border: 1px solid var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            font-weight: bold;
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Card Membri Arrotondate e Dynamic */
+        .member-card {
+            background: linear-gradient(145deg, #131522, #0d0e16) !important;
+            border: 2px solid var(--cyber-fuxia) !important;
+            border-radius: 24px !important; /* Molto arrotondata */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        box-shadow 0.4s ease, 
+                        border-color 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(224, 27, 132, 0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(224, 27, 132, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+            pointer-events: none;
+        }
+
+        .member-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px var(--cyber-fuxia-glow), inset 0 0 20px rgba(0, 240, 255, 0.1) !important;
+            border-color: var(--cyber-cyan) !important; /* Passa da fuxia a ciano all'hover! */
+        }
+
+        /* Avatar Circolare con Anello Luminoso */
+        .avatar-outer-ring {
+            width: 130px;
+            height: 130px;
+            margin: 25px auto 15px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(45deg, var(--cyber-fuxia), var(--cyber-cyan));
+            box-shadow: 0 0 15px rgba(224, 27, 132, 0.4);
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        .member-card:hover .avatar-outer-ring {
+            transform: rotate(360deg); /* L'anello esterno gira all'hover! */
+            box-shadow: 0 0 25px var(--cyber-cyan-glow);
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid #0d0e16;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .member-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder-cyber {
+            color: var(--cyber-fuxia);
+            text-shadow: 0 0 10px var(--cyber-fuxia-glow);
+        }
+
+        .member-card:hover .avatar-placeholder-cyber {
+            color: var(--cyber-cyan);
+            text-shadow: 0 0 10px var(--cyber-cyan-glow);
+        }
+
+        .card-title-cyber {
+            color: var(--cyber-fuxia);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s;
+        }
+
+        .member-card:hover .card-title-cyber {
+            color: #fff;
+            text-shadow: 0 0 8px var(--cyber-fuxia-glow);
+        }
+
+        .card-text-cyber {
+            color: #a4b0cb;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Pulsanti Cyber Arrotondati */
+        .btn-cyber-primary {
+            background-color: transparent;
+            border: 2px solid var(--cyber-fuxia);
+            color: var(--cyber-fuxia);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 50px; /* Arrotondato */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 0 10px rgba(224, 27, 132, 0.2);
+        }
+
+        .btn-cyber-primary:hover {
+            background-color: var(--cyber-fuxia);
+            color: #000;
+            box-shadow: 0 0 20px var(--cyber-fuxia-glow);
+            transform: scale(1.05);
+        }
+
+        .btn-cyber-outline {
+            background-color: transparent;
+            border: 1.5px solid #4f5875;
+            color: #a4b0cb;
+            border-radius: 50px; /* Arrotondato */
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-cyber-outline:hover {
+            background-color: var(--cyber-cyan);
+            border-color: var(--cyber-cyan);
+            color: #000;
+            box-shadow: 0 0 15px var(--cyber-cyan-glow);
+        }
+
+        .btn-action-round {
+            width: 34px;
+            height: 34px;
+            border-radius: 50% !important; /* Bottoncini tondi */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all 0.3s;
+        }
+
+        .btn-cyber-warning {
+            color: #ffc107;
+            border: 1px solid #ffc107;
+            background: transparent;
+        }
+        .btn-cyber-warning:hover {
+            background-color: #ffc107;
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+        }
+
+        .btn-cyber-danger {
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            background: transparent;
+        }
+        .btn-cyber-danger:hover {
+            background-color: #dc3545;
+            color: #000;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Alert stilizzati */
+        .alert-cyber-success {
+            background-color: rgba(0, 43, 0, 0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .alert-cyber-danger {
+            background-color: rgba(43, 0, 0, 0.8);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        hr.cyber-hr {
+            border-top: 1px solid rgba(224, 27, 132, 0.2);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar con logo fuxia.png -->
+    <nav class="navbar navbar-dark navbar-cyber mb-5 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/team">
+                <img th:src="@{/images/fuxia.png}" alt="Team Pixeltek Logo" class="navbar-brand-img me-2">
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- Intestazione e Bottone di Creazione -->
+        <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom border-secondary border-opacity-25">
+            <div>
+                <h1 class="fw-bold cyber-h1 m-0">Team <span style="color: var(--cyber-fuxia)">Pixeltek</span></h1>
+                <p class="text-cyber-muted m-0"><i class="fa-solid fa-terminal me-2" style="color: var(--cyber-cyan)"></i>Interfaccia di Gestione Membri // Pixeltek.</p>
+            </div>
+            <a th:href="@{/team/crea}" class="btn btn-cyber-primary px-4 py-2 shadow-sm">
+                <i class="fa-solid fa-user-plus me-2"></i>Inizializza Profilo
+            </a>
+        </div>
+
+        <!-- Alert Stilizzati -->
+        <div th:if="${successMessage}" class="alert alert-cyber-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-cyber-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-exclamation me-2"></i>
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Stato Lista Vuota Cyber -->
+        <div th:if="${#lists.isEmpty(dipartimenti)}" class="text-center py-5 bg-black border border-secondary border-opacity-25 rounded shadow-sm">
+            <i class="fa-solid fa-users-slash fa-3x text-cyber-muted mb-3"></i>
+            <h3 class="text-cyber-muted">Nessun dato registrato nel modulo team</h3>
+            <p class="text-cyber-muted">Usa il comando 'Inizializza Profilo' per iniziare.</p>
+        </div>
+
+        <!-- SEZIONI DIVISE PER DIPARTIMENTO (DINAMICHE) -->
+        <div class="dept-section" th:each="dipartimento : ${dipartimenti}" th:if="${not #lists.isEmpty(dipartimento.membri)}">
+            
+            <!-- Intestazione del Dipartimento -->
+            <div class="dept-header d-flex align-items-center mb-4">
+                <h2 class="dept-title m-0" th:text="${dipartimento.nome}">NOME DIPARTIMENTO</h2>
+                <span class="badge dept-count-badge ms-3" th:text="${#lists.size(dipartimento.membri) == 1 ? '1 unità' : #lists.size(dipartimento.membri) + ' unità'}">0 unità</span>
+            </div>
+
+            <!-- Griglia dei Membri del Dipartimento specifico -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                
+                <div class="col" th:each="membro : ${dipartimento.membri}">
+                    <div class="card h-100 border-0 shadow-sm member-card">
+                        
+                        <!-- Contenitore Avatar Tondo con Anello LED neon -->
+                        <div class="avatar-outer-ring">
+                            <div class="avatar-inner">
+                                <img th:if="${membro.fotoUrl != null && !membro.fotoUrl.isEmpty()}" 
+                                     th:src="${membro.fotoUrl}" 
+                                     class="member-img" 
+                                     th:alt="${membro.nome + ' ' + membro.cognome}">
+                                
+                                <div th:unless="${membro.fotoUrl != null && !membro.fotoUrl.isEmpty()}" class="avatar-placeholder-cyber">
+                                    <i class="fa-solid fa-user fa-3x"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Corpo della Card Cyber -->
+                        <div class="card-body d-flex flex-column pt-2">
+                            <div class="text-center mb-3">
+                                <h4 class="card-title card-title-cyber mb-1" th:text="${membro.nome + ' ' + membro.cognome}">Nome Cognome</h4>
+                                <span class="text-cyber-muted small" style="text-transform: uppercase; letter-spacing: 1px;" th:text="${dipartimento.nome}">Dipartimento</span>
+                            </div>
+                            
+                            <p class="card-text card-text-cyber flex-grow-1 text-center text-truncate-3 px-2" th:text="${membro.descrizione}">
+                                Descrizione unità...
+                            </p>
+                            
+                            <hr class="cyber-hr my-3">
+
+                            <!-- Pulsanti d'Azione Cyber -->
+                            <div class="d-flex justify-content-between align-items-center mt-auto pb-2">
+                                <a th:href="@{/team/dettaglio/{id}(id=${membro.id})}" class="btn btn-cyber-outline btn-sm px-3">
+                                    <i class="fa-solid fa-eye me-1"></i>Dettaglio
+                                </a>
+                                
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{/team/modifica/{id}(id=${membro.id})}" class="btn btn-cyber-warning btn-action-round btn-sm">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form th:action="@{/team/elimina/{id}(id=${membro.id})}" method="POST" 
+                                          onsubmit="return confirm('Confermare la rimozione definitiva dell\'unità dal database?');" class="d-inline">
+                                        <button type="submit" class="btn btn-cyber-danger btn-action-round btn-sm">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 Bundle con Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

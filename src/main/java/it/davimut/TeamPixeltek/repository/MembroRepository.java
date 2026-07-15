@@ -8,17 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import it.davimut.TeamPixeltek.model.TeamModel;
+import it.davimut.TeamPixeltek.model.MembroModel;
 
 @Repository
-public interface TeamRepository extends JpaRepository<TeamModel, Integer> {
+public interface MembroRepository extends JpaRepository<MembroModel, Integer> {
 
    
     // Metodi di ricerca utili per filtrare i membri del team
-    List<TeamModel> findByNome(String nome);
+    List<MembroModel> findByNome(String nome);
 
-    List<TeamModel> findByCognome(String cognome);
+    List<MembroModel> findByCognome(String cognome);
 
     // Comodo per una barra di ricerca globale (cerca nel nome o nel cognome)
-    List<TeamModel> findByNomeContainingIgnoreCaseOrCognomeContainingIgnoreCase(String nome, String cognome);
+    List<MembroModel> findByNomeContainingIgnoreCaseOrCognomeContainingIgnoreCase(String nome, String cognome);
 }
