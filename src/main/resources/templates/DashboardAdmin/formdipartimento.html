@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixeltek - Gestione Dipartimenti</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --cyber-fuxia: #e01b84; 
+            --cyber-fuxia-glow: rgba(224, 27, 132, 0.6);
+            --cyber-cyan: #00f0ff;
+            --cyber-cyan-glow: rgba(0, 240, 255, 0.6);
+            --cyber-dark: #08090c;
+            --cyber-gray: #11131c;
+            --cyber-light: #f0f0f0;
+        }
+
+        body {
+            background-color: var(--cyber-dark) !important;
+            color: var(--cyber-light) !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, #10121d 0%, var(--cyber-dark) 80%);
+            min-height: 100vh;
+        }
+
+        .navbar-cyber {
+            background-color: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 2px solid var(--cyber-fuxia);
+            box-shadow: 0 0 20px var(--cyber-fuxia-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand-img {
+            height: 45px;
+            filter: drop-shadow(0 0 5px var(--cyber-fuxia-glow));
+        }
+
+        /* Alert/Popup Cyberpunk */
+        .alert-cyber-success {
+            background-color: rgba(0, 240, 255, 0.1) !important;
+            border: 2px solid var(--cyber-cyan) !important;
+            color: var(--cyber-cyan) !important;
+            box-shadow: 0 0 15px var(--cyber-cyan-glow);
+            border-radius: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        .alert-cyber-danger {
+            background-color: rgba(224, 27, 132, 0.1) !important;
+            border: 2px solid var(--cyber-fuxia) !important;
+            color: var(--cyber-fuxia) !important;
+            box-shadow: 0 0 15px var(--cyber-fuxia-glow);
+            border-radius: 16px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Pannelli Card */
+        .cyber-card {
+            background: linear-gradient(145deg, #131522, #0d0e16) !important;
+            border: 2px solid var(--cyber-fuxia) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(224, 27, 132, 0.05);
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .cyber-card-cyan {
+            border: 2px solid var(--cyber-cyan) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        }
+
+        h2.cyber-title {
+            color: var(--cyber-cyan);
+            text-shadow: 0 0 10px var(--cyber-cyan-glow);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        h2.cyber-title-fuxia {
+            color: var(--cyber-fuxia);
+            text-shadow: 0 0 10px var(--cyber-fuxia-glow);
+        }
+
+        /* Form e Input */
+        .form-control-cyber {
+            background-color: rgba(8, 9, 12, 0.8) !important;
+            border: 1.5px solid #4f5875 !important;
+            color: var(--cyber-light) !important;
+            border-radius: 12px !important;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-cyber:focus {
+            border-color: var(--cyber-cyan) !important;
+            box-shadow: 0 0 12px var(--cyber-cyan-glow) !important;
+        }
+
+        .form-control-cyber::placeholder {
+            color: #4f5875;
+        }
+
+        .input-group-text-cyber {
+            background-color: rgba(8, 9, 12, 0.9) !important;
+            border: 1.5px solid #4f5875 !important;
+            color: var(--cyber-fuxia) !important;
+            border-radius: 12px 0 0 12px !important;
+            text-shadow: 0 0 5px var(--cyber-fuxia-glow);
+        }
+
+        /* Tabella Terminale con Scrollbar */
+        .cyber-table-container {
+            max-height: 400px; 
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Barra di scorrimento stilizzata Cyberpunk */
+        .cyber-table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .cyber-table-container::-webkit-scrollbar-track {
+            background: rgba(8, 9, 12, 0.5);
+            border-radius: 10px;
+        }
+        .cyber-table-container::-webkit-scrollbar-thumb {
+            background: var(--cyber-cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--cyber-cyan-glow);
+        }
+        .cyber-table-container::-webkit-scrollbar-thumb:hover {
+            background: var(--cyber-fuxia);
+            box-shadow: 0 0 10px var(--cyber-fuxia-glow);
+        }
+
+        .cyber-table {
+            color: var(--cyber-light);
+            border-color: rgba(79, 88, 117, 0.3);
+        }
+
+        .cyber-table th {
+            color: var(--cyber-cyan) !important;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-bottom: 2px solid var(--cyber-cyan);
+            position: sticky;
+            top: 0;
+            background-color: #0d0e16 !important;
+            z-index: 2;
+        }
+
+        .cyber-table td {
+            background-color: transparent !important;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(79, 88, 117, 0.2);
+            padding: 1rem 0.75rem;
+        }
+
+        /* Errori */
+        .cyber-error {
+            color: #dc3545;
+            text-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* Pulsanti */
+        .btn-cyber-primary {
+            background-color: transparent;
+            border: 2px solid var(--cyber-fuxia);
+            color: var(--cyber-fuxia);
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(224, 27, 132, 0.2);
+        }
+
+        .btn-cyber-primary:hover {
+            background-color: var(--cyber-fuxia);
+            color: #000;
+            box-shadow: 0 0 20px var(--cyber-fuxia-glow);
+        }
+
+        .btn-cyber-cyan {
+            border: 2px solid var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .btn-cyber-cyan:hover {
+            background-color: var(--cyber-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--cyber-cyan-glow);
+        }
+
+        .btn-cyber-secondary {
+            background-color: transparent;
+            border: 1.5px solid #4f5875;
+            color: #a4b0cb;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-cyber-secondary:hover {
+            background-color: rgba(79, 88, 117, 0.2);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-cyber mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/teamAdmin">
+                <img th:src="@{/images/fuxia.png}" alt="Team Pixeltek Logo" class="navbar-brand-img me-2">
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-2">
+        
+        <!-- ALERT POPUP CON SCOMPARSA AUTOMATICA -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <!-- Popup Successo -->
+                <div th:if="${successMessage}" class="alert alert-cyber-success alert-dismissible fade show shadow" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-circle-check fa-lg me-3"></i>
+                        <span th:text="${successMessage}">Azione eseguita con successo!</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                
+                <!-- Popup Errore -->
+                <div th:if="${errorMessage}" class="alert alert-cyber-danger alert-dismissible fade show shadow" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-triangle-exclamation fa-lg me-3"></i>
+                        <span th:text="${errorMessage}">Si è verificato un errore del sistema.</span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRID PRINCIPALE -->
+        <div class="row g-4">
+            
+            <!-- COLONNA FORM (Sinistra) -->
+            <div class="col-lg-5">
+                <div class="cyber-card">
+                    <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-25">
+                        <i class="fa-solid fa-folder-plus fa-2x text-cyber-cyan me-3" style="filter: drop-shadow(0 0 5px var(--cyber-cyan-glow));"></i>
+                        <h2 class="cyber-title m-0" th:text="${dipartimento.id != null} ? 'Modifica Settore' : 'Inizializza Settore'">Inizializza Settore</h2>
+                    </div>
+
+                    <!-- Form Thymeleaf -->
+                    <form th:action="@{/dipartimento/salva}" th:object="${dipartimento}" method="POST">
+                        
+                        <input type="hidden" th:field="*{id}" />
+
+                        <!-- Campo Nome -->
+                        <div class="mb-4">
+                            <label for="nome" class="form-label text-cyber-muted fw-bold small">CODICE IDENTIFICATIVO DIPARTIMENTO</label>
+                            <div class="input-group">
+                                <span class="input-group-text input-group-text-cyber"><i class="fa-solid fa-network-wired"></i></span>
+                                <input type="text" class="form-control form-control-cyber" id="nome" th:field="*{nome}" placeholder="Es. Cyber Security">
+                            </div>
+                            <div class="cyber-error mt-1" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                        </div>
+
+                        <!-- Campo Descrizione -->
+                        <div class="mb-4">
+                            <label for="descrizione" class="form-label text-cyber-muted fw-bold small">LOG / DESCRIZIONE SETTORE</label>
+                            <div class="input-group">
+                                <span class="input-group-text input-group-text-cyber"><i class="fa-solid fa-align-left"></i></span>
+                                <textarea class="form-control form-control-cyber" id="descrizione" th:field="*{descrizione}" rows="4" placeholder="Fornisci dettagli sul campo d'azione del settore..."></textarea>
+                            </div>
+                            <div class="cyber-error mt-1" th:if="${#fields.hasErrors('descrizione')}" th:errors="*{descrizione}"></div>
+                        </div>
+
+                        <hr class="border-secondary border-opacity-25 my-4">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/teamAdmin" class="btn btn-cyber-secondary px-3 py-2">
+                                <i class="fa-solid fa-arrow-left me-2"></i>Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-cyber-primary px-4 py-2">
+                                <i class="fa-solid fa-circle-check me-2"></i>Salva Modifiche
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- COLONNA LISTA CON SCROLLBAR (Destra) -->
+            <div class="col-lg-7">
+                <div class="cyber-card cyber-card-cyan">
+                    <div class="d-flex align-items-center mb-4 pb-2 border-bottom border-secondary border-opacity-25">
+                        <i class="fa-solid fa-list-check fa-2x text-cyber-fuxia me-3" style="filter: drop-shadow(0 0 5px var(--cyber-fuxia-glow));"></i>
+                        <h2 class="cyber-title cyber-title-fuxia m-0">Database Settori</h2>
+                    </div>
+
+                    <!-- Contenitore con altezza fissa e scrollbar -->
+                    <div class="cyber-table-container">
+                        <table class="table cyber-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%">Dipartimento</th>
+                                    <th style="width: 45%">Descrizione</th>
+                                    <th style="width: 25%" class="text-end">Operazioni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="dept : ${dipartimenti}">
+                                    <td class="fw-bold text-cyber-cyan" th:text="${dept.nome}">Cyber Security</td>
+                                    <td class="text-muted small" th:text="${dept.descrizione != null && !dept.descrizione.isEmpty()} ? ${dept.descrizione} : 'Nessuna descrizione specificata.'">Log descrittivi...</td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <a th:href="@{/dipartimento/modifica/{id}(id=${dept.id})}" class="btn btn-sm btn-cyber-primary btn-cyber-cyan" title="Modifica">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+                                            <form th:action="@{/dipartimento/elimina/{id}(id=${dept.id})}" method="POST" 
+                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo dipartimento? L\'operazione non è reversibile.');">
+                                                <button type="submit" class="btn btn-sm btn-cyber-primary" title="Elimina">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(dipartimenti)}">
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        <i class="fa-solid fa-database me-2"></i>Nessun settore inizializzato nel sistema.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SCRIPT AUTO-DISMISS PER POPUP (4 secondi di attesa) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    // Usa l'API nativa di Bootstrap 5 per chiudere l'alert dolcemente
+                    const bsAlert = new bootstrap.Alert(alert);
+                    if (bsAlert) {
+                        bsAlert.close();
+                    }
+                }, 4000); // 4000 millisecondi = 4 secondi
+            });
+        });
+    </script>
+</body>
+</html>
